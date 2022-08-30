@@ -1,8 +1,9 @@
 const headers = {
 	"Content-Type": "application/json",
-	"X-Parse-Application-Id": "biorfarm_365e4dcrbh76t"
-};
-const url = 'https://biorfarm.herokuapp.com/parse/'
+	"X-Parse-Application-Id": "ehTXbSdLSTgq4UHgYNuGw8Ug8u5qbrpFGoaID5XY",
+	"X-Parse-REST-API-Key": "bOb98kZdkjbi5UU2HFh4bnLMyjFso1SwR4PRxRwe"
+   };
+ const url = 'https://parseapi.back4app.com/'
 
 /* Load game's Ranking at loading page */
 /*
