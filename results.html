@@ -1,0 +1,543 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<title>Spremi e vinci - Biorfarm</title>
+
+
+
+	<!-- Standardised web app manifest -->
+
+
+	<!-- Allow fullscreen mode on iOS devices. (These are Apple specific meta tags.) -->
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+
+	<meta name="HandheldFriendly" content="true" />
+
+
+
+	<!-- All margins and padding must be zero for the canvas to fill the screen. -->
+	<style type="text/css">
+		* {
+			padding: 0;
+			margin: 0;
+		}
+
+		html,
+		body {
+			background-color: #c3d84c;
+			color: #fff;
+			overflow: hidden;
+			touch-action: none;
+			-ms-touch-action: none;
+			height: 100%;
+		}
+
+		canvas {
+			touch-action-delay: none;
+			touch-action: none;
+			-ms-touch-action: none;
+		}
+
+		#top {
+			min-height: 100vh;
+		}
+
+		#c2canvasdiv {
+			display: none;
+			z-index: -100;
+		}
+
+		#form {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			height: 30%;
+			width: 100%;
+			z-index: 100;
+			position: absolute;
+			top: 0;
+
+		}
+
+		#form .logo {
+			text-align: center;
+		}
+
+		#form .logo img {
+			max-height: 10vh;
+		}
+
+		#dismiss {
+			margin-top: 6vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+		}
+
+		#dismiss button {
+			font-size: 3vh;
+			padding: 0 4vw;
+			z-index: 5;
+			border-radius: .5vh;
+			/*color: #004628;*/
+			line-height: 6vh;
+			font-weight: 500;
+			border: 1px solid #fff;
+			/*background-color: #fff;*/
+			font-variant: small-caps;
+			margin: 0 auto;
+			width: 20%;
+		}
+
+
+
+		/*
+		#dismiss button:active {
+			color: #fff;
+			background-color: #004628;
+		}
+*/
+
+		#send,
+		#escape {
+			color: #fff;
+		}
+
+		#send {
+			background-color: #E6640A;
+		}
+
+		#escape {
+			background-color: #004628;
+		}
+
+		#send:active {
+			background-color: rgb(240, 49, 15);
+		}
+
+		#escape:active {
+			background-color: #c3d84c;
+		}
+
+		.disabled-send {
+			background-color: lightgrey !important;
+			color: darkgrey !important;
+			border: 1px solid darkgray !important;
+		}
+
+
+		#email,
+		#player {
+			/*display: block;*/
+			max-width: 60%;
+			font-size: 18px;
+			line-height: 35px;
+			margin: 30px auto 20px auto;
+			min-width: 500px;
+			text-align: center;
+			border-radius: 5px;
+			border: 1px solid #004628;
+			background-color: #f6f4f0;
+			padding: 5px 0;
+		}
+
+		#leaderboard {
+			text-align: center;
+			width: 100%;
+			height: 70%;
+			background-color: #fff;
+			position: absolute;
+			bottom: 0;
+			font-family: sans-serif;
+		}
+
+		#leaderboard .congrats {
+			text-align: center;
+			margin-bottom: 2vh;
+		}
+
+		#leaderboard .congrats img {
+			max-width: 90%;
+		}
+
+		#leaderboard h2 {
+
+			font-size: 28px;
+			line-height: 42px;
+			color: #fff;
+			background-color: #E6640A;
+			display: inline-block;
+			padding: 10px 0;
+			width: 100%;
+			margin: 0 auto;
+		}
+
+		#leaderboard h2:nth-of-type(1) {
+			font-size: 35px;
+		}
+
+		#leaderboard h3 {
+			color: #004628;
+			font-size: 3.2vh;
+			width: 70%;
+			margin: 50px auto 0 auto;
+		}
+
+		.number {
+			color: #004628;
+			font-size: 3vh;
+			width: 100%;
+			margin-bottom: 2vh;
+		}
+
+		#leaderboard .table {
+			background-color: #fff;
+			padding: 60px 0px;
+			font-family: sans-serif;
+			display: table;
+			width: 100%;
+			margin: 0 auto;
+		}
+
+		#leaderboard .table .row {
+			display: table-row;
+			height: 30px;
+		}
+
+		#leaderboard .table .nickname,
+		#leaderboard .table .score {
+			color: #004628;
+			display: table-cell;
+			width: 50%;
+			font-size: 20px;
+		}
+
+		#leaderboard .table .nickname {
+			text-align: right;
+			font-weight: bold;
+		}
+
+		#leaderboard .table .score {
+			text-align: left;
+			padding-left: 30px;
+		}
+
+		.native-toast {
+			font-family: sans-serif;
+			display: flex;
+			justify-content: center;
+		}
+
+		.hide {
+			display: none;
+		}
+
+		.check {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: 8px auto;
+		}
+
+		.check h4 {
+			color: black;
+			margin-left: 10px;
+			font-size: 15px;
+		}
+
+		.info h4 {
+			font-size: 15px;
+		}
+
+		#modal-btn {
+			color: #E6640A;
+			max-width: 120px;
+			margin: 0 auto;
+		}
+
+		#accept {
+			width: 25px;
+			height: 25px;
+		}
+
+		h1 {
+			color: #E6640A;
+		}
+
+		@media only screen and (max-width:767px) {
+			#leaderboard h2 {
+				font-size: 18px;
+				padding: 5px 0;
+				width: 100%;
+				margin: 0 auto;
+			}
+
+			#leaderboard h2:nth-of-type(1) {
+				font-size: 20px;
+			}
+
+			#leaderboard h3 {
+				font-size: 3vh;
+				margin: 20px auto 0 auto;
+				width: 65%;
+			}
+
+			#email {
+				min-width: 280px;
+				font-size: 15px;
+				line-height: 20px;
+				margin: 15px auto 5px auto;
+			}
+
+			#accept {
+				width: 15px;
+				height: 15px;
+			}
+
+			.check {
+				width: 90%;
+			}
+
+			.check h4 {
+				width: 65%;
+				font-size: 13px;
+				text-align: left;
+			}
+
+			.info h4 {
+				font-size: 13px;
+
+			}
+
+			#dismiss {
+				margin-top: 3vh;
+			}
+
+			#dismiss button {
+				width: 30%;
+				padding: 0;
+			}
+		}
+
+		@media only screen and (min-width:1024px) {
+			.check h4 {
+				font-size: 19px;
+			}
+		}
+
+		/* Modal */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 110;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: 100%;
+			background-color: #fff;
+		}
+
+		.modal-content {
+			/*margin: 10% auto; */
+			width: 100%;
+			height: 100vh;
+			/* box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 7px 20px 0 rgba(0, 0, 0, 0.17); */
+			animation-name: modalopen;
+			animation-duration: 1s;
+		}
+
+		.modal-header h2,
+		.modal-footer h3 {
+			margin: 0;
+		}
+
+		.modal-header h2 {
+			width: 100%;
+			display: inline-block;
+			text-align: center;
+		}
+
+		.modal-header {
+			background: #c3d84c;
+			padding: 10px 0;
+			color: #fff;
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			height: 45px;
+			width: 100%;
+			position: absolute;
+			top: 0;
+			display: flex;
+			align-items: center;
+		}
+
+		.modal-body {
+			padding: 20px 30px;
+			background: #fff;
+			height: 62%;
+			position: relative;
+			top: 85px;
+			overflow-y: auto;
+			color: #000;
+		}
+
+		.modal-footer {
+			background: #c3d84c;
+			padding: 10px 0;
+			color: #fff;
+			text-align: center;
+			border-bottom-left-radius: 5px;
+			border-bottom-right-radius: 5px;
+			height: 45px;
+			width: 100%;
+			position: absolute;
+			bottom: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.info {
+			color: #000;
+		}
+
+		.close {
+			display: inline-block;
+			width: 10%;
+			font-size: 35px;
+			color: #fff;
+			position: absolute;
+			right: 0;
+			z-index: 100;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: #000;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		@keyframes modalopen {
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
+			}
+		}
+
+		@media only screen and (min-width:768px) {
+			.modal-body {
+				height: 78%;
+			}
+		}
+	</style>
+
+	<link rel="stylesheet" href="native-toast.css" title="toastr" type="text/css" media="screen" charset="utf-8">
+
+
+</head>
+
+<body>
+	<div id="fb-root"></div>
+
+	<script>
+		// Issue a warning if trying to preview an exported project on disk.
+		(function () {
+			// Check for running exported on file protocol
+			if (window.location.protocol.substr(0, 4) === "file") {
+				alert(
+					"Exported games won't work until you upload them. (When running on the file:/// protocol, browsers block many features from working for security reasons.)"
+				);
+			}
+		})();
+	</script>
+
+
+	<div id="my-modal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2>Privacy Policy</h2>
+				<span id="btnClose" class="close">&times;</span>
+			</div>
+			<div class="modal-body">
+
+			</div>
+			<div class="modal-footer">
+				<h3 id="close">CHIUDI</h3>
+			</div>
+		</div>
+	</div>
+	<div id="top">
+		<div id="form">
+			<div class="logo"><img src="images/biofarm-sheet0.png"></div>
+		</div>
+
+		<div id="leaderboard">
+			<div id="result">
+				<!--<div class="congrats"><img src="images/congratulations.png"></div>
+				 <h3>score</h3>
+				<div class="score number"></div>
+				<h3>ranking</h3>
+				<div class="position number"></div>	
+				<div id="dismiss">
+					<button>ok</button>	
+				</div>
+				-->
+				<h2>Grazie per aver partecipato</h2>
+				<h2 id="player-score"></h2>
+				<h3>Lascia la tua email per scoprire se hai vinto</h3>
+				<input type="email" name="" id="email" placeholder="email">
+				<div class="info">
+					<div class="check">
+						<input type="checkbox" name="accept" id="accept">
+						<h4>Permettici di usare la tua email per scopi commerciali</h4>
+
+					</div>
+					<h4 id="modal-btn">Privacy Policy</h4>
+				</div>
+				<div id="dismiss">
+					<button id="send" class="disabled-send" disabled>Invia</button>
+					<button id="escape">Esci</button>
+				</div>
+			</div>
+
+		</div>
+		<!--
+		<div id="score">
+			<h2>Il tuo punteggio</h2>
+			<div class="number"></div>
+		</div>
+		
+		<div id="position">
+			<h2>La tua posizione</h2>
+			<div class="number"></div>	
+		</div>
+		<div id="dismiss">
+			<button>ok</button>	
+		</div>
+-->
+	</div>
+
+
+	<!-- Construct 2 exported games require jQuery. -->
+	<script src="jquery-2.1.1.min.js"></script>
+
+	<script src="native-toast.min.js" charset="utf-8"> </script>
+
+
+	<script src="results.js"></script>
+
+
+
+</body>
+
+</html>
