@@ -1,9 +1,9 @@
 const headers = {
 	"Content-Type": "application/json",
-	"X-Parse-Application-Id": "ehTXbSdLSTgq4UHgYNuGw8Ug8u5qbrpFGoaID5XY",
-	"X-Parse-REST-API-Key": "bOb98kZdkjbi5UU2HFh4bnLMyjFso1SwR4PRxRwe"
+	"X-Parse-Application-Id": PARSE_APP_ID,
+	"X-Parse-REST-API-Key": PARSE_REST_API_KEY,
    };
- const url = 'https://parseapi.back4app.com/'
+ const url = PARSE_URL
 
 /* Load game's Ranking at loading page */
 /*
